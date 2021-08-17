@@ -90,7 +90,7 @@ INSERT INTO aluno (codigo, nome, endereco, sigla_estado, id_classe) VALUES (
 9, 'WALMIR BURIN', 'RUA ASSIS', 'SP', 3
 )
 GO
-INSERT INTO aluno_disciplina (cod_aluno, id_disciplina, nota_aluno) (
+INSERT INTO aluno_disciplina (cod_aluno, id_disciplina, nota_aluno) VALUES (
 1, 'MAT', 0,
 2, 'MAT', 0,
 3, 'MAT', 1,
@@ -105,3 +105,112 @@ INSERT INTO aluno_disciplina (cod_aluno, id_disciplina, nota_aluno) (
 7, 'POR', 2,
 1, 'FIS', 3
 )
+
+--A
+--1
+SELECT * FROM aluno
+
+--2
+SELECT dis.nome AS nome
+FROM disciplina dis
+WHERE dis.nota_min_disciplina < 5
+
+--3
+SELECT * FROM disciplina
+WHERE disciplina.nota_min_disciplina >= 3 AND disciplina.nota_min_disciplina <= 5
+
+--B
+--1
+SELECT * FROM aluno al
+ORDER BY al.nome, al.id_classe
+
+--2
+SELECT * FROM aluno al
+ORDER BY al.nome DESC
+
+--3
+SELECT DISTINCT al.nome AS nome_aluno
+FROM aluno al, aluno_disciplina ad, disciplina dis
+WHERE al.codigo = ad.cod_aluno
+    AND dis.id = ad.id_disciplina
+    AND dis.nome LIKE 'POR%'
+	AND al.nome IN
+	(
+		SELECT DISTINCT al.nome AS nome_aluno
+		FROM aluno al, aluno_disciplina ad, disciplina dis
+		WHERE al.codigo = ad.cod_aluno
+		AND dis.id = ad.id_disciplina
+		AND dis.nome LIKE 'MAT%'
+	)
+GROUP BY al.nome
+
+--C
+--1
+SELECT al.nome
+FROM aluno al
+
+--2
+SELECT al.nome AS nome_aluno, al.endereco AS endereco_aluno
+FROM aluno al, aluno_disciplina ad, disciplina dis
+WHERE al.codigo = ad.cod_aluno
+	AND dis.id = ad.id_disciplina
+	AND dis.nome LIKE 'FIS%'
+
+--3
+SELECT al.nome AS nome_aluno, dis.nome AS nome_disciplina,
+	'nº ' + CAST(cla.id AS VARCHAR(3)) + '. andar: ' + CAST(cla.id_andar AS VARCHAR(6)) AS classe
+FROM aluno al, aluno_disciplina ad, disciplina dis, classe cla
+WHERE al.codigo = ad.cod_aluno
+	AND dis.id = ad.id_disciplina
+	AND al.id_classe = cla.id
+	AND dis.nome LIKE 'FIS%'
+
+--D
+--1
+SELECT prof.nome AS nome_professor, dis.nome AS nome_disciplina
+FROM professor prof, disciplina dis
+WHERE prof.id = dis.professor_disciplina
+
+SELECT prof.nome AS nome_professor
+FROM professor prof
+LEFT OUTER JOIN disciplina dis
+ON prof.id = dis.professor_disciplina
+WHERE dis.professor_disciplina IS NULL
+
+--E
+--1
+INSERT INTO estado (sigla, nome) VALUES ('PI', 'PIAUI')
+SELECT * FROM estado
+
+INSERT INTO aluno (codigo, nome, endereco, sigla_estado, id_classe) VALUES
+(10, 'ZE DO PIAUI', 'RUA DAS PALMEIRAS', 'PI', 3)
+SELECT * FROM aluno
+
+INSERT INTO aluno_disciplina (cod_aluno, id_disciplina, nota_aluno) VALUES 
+(10, 'MAT', 7)
+SELECT * FROM aluno_disciplina
+
+SELECT DISTINCT prof.nome
+FROM professor prof
+WHERE prof.id IN (
+                SELECT dis.professor_disciplina
+				FROM disciplina dis
+                WHERE dis.id IN (
+                        SELECT ad.id_disciplina
+						FROM aluno_disciplina ad
+                        WHERE ad.cod_aluno IN (
+                                    SELECT al.codigo 
+									FROM aluno al
+                                    WHERE al.sigla_estado IN (
+                                                SELECT e.sigla
+												FROM estado e
+                                                WHERE e.nome = 'PIAUI'
+                                            )
+                                            AND al.id_classe IN (
+                                                SELECT cla.id
+												FROM classe cla
+                                                WHERE cla.id_andar = 3
+                                            )
+                            )         
+                    )
+                )
