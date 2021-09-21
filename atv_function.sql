@@ -63,6 +63,32 @@ INSERT INTO aluno (cod, nome) VALUES
 (7006, 'Fagner Lemos'),
 (7007, 'Emerson Sheik')
 
+INSERT INTO aluno_turma (codAluno, anoSemTurma, codDepto, numDisc, siglaTur) VALUES
+(7001, 20191, 'EXATA', 5003, 'B1'),
+(7002, 20191, 'EXATA', 5003, 'B1'),
+(7003, 20192, 'TECNO', 5002, 'A2'),
+(7004, 20192, 'TECNO', 5002, 'A2'),
+(7005, 20192, 'TECNO', 5002, 'A2'),
+(7006, 20201, 'TECNO', 5001, 'A1'),
+(7007, 20201, 'TECNO', 5001, 'A1')
+
+INSERT INTO horario (anoSem, codDepto, numDisc, siglaTur, diaSem, horaInicio, numSala, codPred, numHoras) VALUES
+()
+
+SELECT * FROM turma
+SELECT * FROM depto
+SELECT * FROM disciplina
+SELECT * FROM sala
+SELECT * FROM predio
+
+SELECT * FROM aluno
+SELECT * FROM aluno_turma
+SELECT * FROM horario
+SELECT * FROM prereq
+SELECT * FROM professor
+SELECT * FROM profturma
+SELECT * FROM titulacao
+
 CREATE FUNCTION aprovacao(@cred VARCHAR(20))
 RETURNS VARCHAR(20)
 BEGIN
